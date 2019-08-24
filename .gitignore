@@ -1,0 +1,12 @@
+# ignore intellij project files
+.idea/
+
+# ignore python virtual environment and any build outputs
+build/
+env/
+
+# ignore files created when running python scripts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
