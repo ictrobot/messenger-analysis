@@ -82,12 +82,14 @@ class Message:
             attach_list = []
             setattr(self, folder_name, attach_list)
             if json_name in msg:
-                conversation_list = getattr(self.conversation, folder_name)
                 for item in msg[json_name]:
                     attachment = Attachment(self, folder_name, item)
+
                     attach_list.append(attachment)
                     self.all_attachments.append(attachment)
-                    conversation_list.append(attachment)
+
+                    getattr(self.conversation, folder_name).append(attachment)
+                    self.conversation.all_attachments.append(attachment)
 
     def __str__(self):
         return "Message({}, '{}')".format(self.datetime, self.conversation.path)
@@ -104,6 +106,7 @@ class Conversation:
         with data_dump._zipfile.open(path.lower() + "message_1.json") as file:
             self._data = json.load(file)
 
+        self.all_attachments = []
         for folder_name, json_name in Attachment.ATTACHMENT_TYPES:
             setattr(self, folder_name, [])
 
