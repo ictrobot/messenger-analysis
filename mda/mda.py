@@ -55,7 +55,8 @@ class DataDump:
 
             base_dir, conv_type, conv_name, _ = sections
             if base_dir == "messages" and conv_type in DataDump.CONVERSATION_TYPES:
-                conv_id = conv_name[conv_name.index("_") + 1:]
+                # id is last 10 characters
+                conv_id = conv_name[-10:]
                 info = ConversationInfo(conv_name, conv_id, conv_type, name)
                 self._conversations.append(info)
 
