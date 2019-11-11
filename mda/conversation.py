@@ -103,15 +103,20 @@ class Conversation:
         self.type = type
         self.path = path
 
-        with data_dump._zipfile.open(path.lower() + "message_1.json") as file:
+        self._data_files = list(filter(lambda x: x.startswith(path.lower() + "message_"), data_dump._zipfile.namelist()))
+        with data_dump._zipfile.open(self._data_files[0]) as file:
             self._data = json.load(file)
+        for df in self._data_files[1:]:
+            with data_dump._zipfile.open(df) as file:
+                self._data["messages"] += json.load(file)["messages"]
 
         self.all_attachments = []
         for folder_name, json_name in Attachment.ATTACHMENT_TYPES:
             setattr(self, folder_name, [])
 
         self.participants = [p["name"] for p in self._data["participants"]]
-        self.messages = [Message(self, msg) for msg in reversed(self._data["messages"])]
+        self.messages = [Message(self, msg) for msg in self._data["messages"]]
+        self.messages.sort(key=lambda x: x.utc_datetime)
 
     def __str__(self):
         return "Conversation('{}', '{}')".format(self.data_dump.path, self.path)
